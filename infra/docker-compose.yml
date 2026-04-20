@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: church_erp_db
+    restart: always
+    environment:
+      POSTGRES_USER: church_admin
+      POSTGRES_PASSWORD: church_password
+      POSTGRES_DB: church_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - church_erp_data:/var/lib/postgresql/data
+
+volumes:
+  church_erp_data:
