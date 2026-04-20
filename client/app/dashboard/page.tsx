@@ -35,15 +35,26 @@ export default function DashboardHome() {
   const [userName, setUserName] = useState("Usuário");
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    let role = "USER";
-    if (userData) {
-      const parsed = JSON.parse(userData);
-      role = parsed.role;
-      setUserRole(role);
-      setUserName(parsed.name?.split(" ")[0] || "Usuário");
-    }
-    fetchDashboardData(role);
+    const fetchUserAndData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          window.location.href = "/login";
+          return;
+        }
+        
+        const profile = await api.get("/auth/profile");
+        const role = profile.role || "USER";
+        setUserRole(role);
+        setUserName(profile.name?.split(" ")[0] || "Usuário");
+        
+        await fetchDashboardData(role);
+      } catch (error) {
+        console.error("Erro de autenticação na home do dashboard");
+      }
+    };
+    
+    fetchUserAndData();
   }, []);
 
   const fetchDashboardData = async (role: string) => {

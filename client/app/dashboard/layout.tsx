@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { api } from "@/lib/api";
 
 const allMenuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard", roles: ["ADMIN", "USER"] },
@@ -30,17 +31,24 @@ export default function DashboardLayout({
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      setUser(JSON.parse(userData));
-    } else {
-      window.location.href = "/login";
-    }
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          window.location.href = "/login";
+          return;
+        }
+        const profile = await api.get("/auth/profile");
+        setUser(profile);
+      } catch (error) {
+        console.error("Erro de autenticação");
+      }
+    };
+    fetchUser();
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
     window.location.href = "/login";
   };
 

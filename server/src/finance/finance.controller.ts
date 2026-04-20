@@ -2,9 +2,10 @@ import { Controller, Get, Post, Body, Param, Delete, UseGuards, Query } from '@n
 import { FinanceService } from './finance.service';
 import { Prisma, TransactionType } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AdminGuard } from '../auth/admin.guard';
 
 @Controller('finance')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, AdminGuard)
 export class FinanceController {
   constructor(private readonly financeService: FinanceService) {}
 

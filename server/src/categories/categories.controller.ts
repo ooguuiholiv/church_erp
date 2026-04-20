@@ -2,9 +2,10 @@ import { Controller, Get, Post, Body, Param, Delete, Query, UseGuards } from '@n
 import { CategoriesService } from './categories.service';
 import { TransactionType, Prisma } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AdminGuard } from '../auth/admin.guard';
 
 @Controller('categories')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, AdminGuard)
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
