@@ -6,6 +6,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'https://app.truechurch.com.br',
+      'http://app.truechurch.com.br',
       'http://localhost:3000',
       'http://localhost:3005'
     ],
