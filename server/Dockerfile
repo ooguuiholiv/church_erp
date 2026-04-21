@@ -1,13 +1,19 @@
 # PRODUCTION DOCKERFILE
 FROM node:20-alpine AS builder
 
+# Instala bibliotecas necessárias para o motor do Prisma funcionar no Alpine
+RUN apk add --no-cache libc6-compat openssl
+
 WORKDIR /app
 
 COPY package*.json ./
 RUN npm install
 
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+
 COPY . .
-RUN DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres" npx prisma generate
+RUN npx prisma generate
 RUN npm run build
 
 FROM node:20-alpine
