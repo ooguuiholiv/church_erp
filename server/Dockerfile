@@ -6,14 +6,15 @@ RUN apt-get update -y && apt-get install -y openssl
 
 WORKDIR /app
 
+# Injeta uma URL fictícia para o Prisma Generate (rodará no postinstall do npm install)
+ENV DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
+
 COPY package*.json ./
+COPY prisma ./prisma/
+
 RUN npm install
 
 COPY . .
-
-# Injeta uma URL fictícia apenas para permitir a geração do cliente Prisma durante o build
-ENV DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
-RUN npx prisma generate
 
 RUN npm run build
 
