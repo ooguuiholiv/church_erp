@@ -13,10 +13,7 @@ services:
       - church_erp_data:/var/lib/postgresql/data
 
   server:
-    build:
-      context: ./server
-      args:
-        - DATABASE_URL=postgresql://church_admin:church_password@db:5432/church_db?schema=public
+    build: ./server
     container_name: church_erp_server
     restart: always
     depends_on:

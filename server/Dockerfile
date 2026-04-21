@@ -9,11 +9,12 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-ARG DATABASE_URL
-ENV DATABASE_URL=$DATABASE_URL
-
 COPY . .
+
+# Injeta uma URL fictícia apenas para permitir a geração do cliente Prisma durante o build
+ENV DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
 RUN npx prisma generate
+
 RUN npm run build
 
 FROM node:20-slim
