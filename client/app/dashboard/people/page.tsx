@@ -63,8 +63,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { format, parseISO } from "date-fns";
-import { ptBR } from "date-fns/locale";
+// Imports de data removidos a favor da string split nativa
 
 import { api } from "@/lib/api";
 
@@ -88,6 +87,7 @@ export default function PeoplePage() {
   const [isFormDialogOpen, setIsFormDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
   
   const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
   const [selectedPerson, setSelectedPerson] = useState<any | null>(null);
@@ -210,7 +210,10 @@ export default function PeoplePage() {
   const formatDateLabel = (dateStr: string) => {
     if (!dateStr) return "N/A";
     try {
-      return format(parseISO(dateStr), "dd/MM/yyyy", { locale: ptBR });
+      // Isola "2004-03-13" de "2004-03-13T00:00:00.000Z" evitando shifts de Timezone
+      const datePart = dateStr.split("T")[0];
+      const [year, month, day] = datePart.split("-");
+      return `${day}/${month}/${year}`;
     } catch {
       return dateStr;
     }
@@ -304,19 +307,12 @@ export default function PeoplePage() {
                             <DropdownMenuItem className="hover:bg-zinc-800 cursor-pointer" onClick={() => handleOpenView(person)}>Ver Perfil</DropdownMenuItem>
                             <DropdownMenuItem className="hover:bg-zinc-800 cursor-pointer" onClick={() => handleOpenEdit(person)}>Editar cadastro</DropdownMenuItem>
                             
-                            <DropdownMenuSub>
-                              <DropdownMenuSubTrigger className="hover:bg-zinc-800 cursor-pointer">
-                                Alterar status
-                              </DropdownMenuSubTrigger>
-                              <DropdownMenuSubContent className="glass border-zinc-800">
-                                <DropdownMenuRadioGroup value={person.status} onValueChange={(val) => handleStatusChange(person.id, val)}>
-                                  <DropdownMenuRadioItem value="VISITANTE" className="text-zinc-300 hover:text-zinc-100 cursor-pointer">VISITANTE</DropdownMenuRadioItem>
-                                  <DropdownMenuRadioItem value="AMIGO" className="text-amber-400 cursor-pointer">AMIGO</DropdownMenuRadioItem>
-                                  <DropdownMenuRadioItem value="PARTICIPANTE" className="text-blue-400 cursor-pointer">PARTICIPANTE</DropdownMenuRadioItem>
-                                  <DropdownMenuRadioItem value="MEMBRO" className="text-emerald-400 cursor-pointer">MEMBRO</DropdownMenuRadioItem>
-                                </DropdownMenuRadioGroup>
-                              </DropdownMenuSubContent>
-                            </DropdownMenuSub>
+                            <DropdownMenuItem className="hover:bg-zinc-800 cursor-pointer" onClick={() => {
+                              setSelectedPerson(person);
+                              setIsStatusDialogOpen(true);
+                            }}>
+                              Alterar status
+                            </DropdownMenuItem>
 
                             <DropdownMenuSeparator className="bg-zinc-800" />
                             <DropdownMenuItem className="text-red-400 hover:bg-red-400/10 cursor-pointer" onClick={() => handleOpenDelete(person)}>Excluir</DropdownMenuItem>
@@ -587,6 +583,41 @@ export default function PeoplePage() {
               </Button>
           </DialogFooter>
          </DialogContent>
+      </Dialog>
+      {/* Status Change Dialog */}
+      <Dialog open={isStatusDialogOpen} onOpenChange={setIsStatusDialogOpen}>
+        <DialogContent className="glass border-zinc-800 text-zinc-100 sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-display font-bold">Alterar Status</DialogTitle>
+            <DialogDescription className="text-zinc-400">
+              Selecione o novo status para <strong className="text-zinc-100">{selectedPerson?.name}</strong>.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-6 space-y-4">
+            <Select 
+              value={selectedPerson?.status} 
+              onValueChange={async (val) => {
+                await handleStatusChange(selectedPerson.id, val);
+                setIsStatusDialogOpen(false);
+              }}
+            >
+              <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-zinc-100">
+                <SelectValue placeholder="Selecione o status" />
+              </SelectTrigger>
+              <SelectContent className="glass border-zinc-800 text-zinc-100">
+                <SelectItem value="VISITANTE">Visitante</SelectItem>
+                <SelectItem value="AMIGO">Amigo</SelectItem>
+                <SelectItem value="PARTICIPANTE">Participante</SelectItem>
+                <SelectItem value="MEMBRO">Membro</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setIsStatusDialogOpen(false)} variant="ghost" className="text-zinc-400 hover:text-zinc-100">
+              Cancelar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     </div>
   );

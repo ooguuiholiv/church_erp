@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { FinanceService } from './finance.service';
 import { Prisma, TransactionType } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -35,6 +35,11 @@ export class FinanceController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.financeService.findOne(id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() data: Prisma.TransactionUpdateInput) {
+    return this.financeService.update(id, data);
   }
 
   @Delete(':id')

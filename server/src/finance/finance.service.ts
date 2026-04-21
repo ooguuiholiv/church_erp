@@ -62,6 +62,13 @@ export class FinanceService {
     };
   }
 
+  async update(id: string, data: Prisma.TransactionUpdateInput): Promise<Transaction> {
+    return this.prisma.transaction.update({
+      where: { id },
+      data,
+    });
+  }
+
   async remove(id: string) {
     return this.prisma.transaction.delete({ where: { id } });
   }
