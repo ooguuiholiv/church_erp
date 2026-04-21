@@ -1,8 +1,8 @@
 # PRODUCTION DOCKERFILE
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 
-# Instala bibliotecas necessárias para o motor do Prisma funcionar no Alpine
-RUN apk add --no-cache libc6-compat openssl
+# Instala openssl, necessário para o Prisma Engine no Debian Slim
+RUN apt-get update -y && apt-get install -y openssl
 
 WORKDIR /app
 
@@ -16,9 +16,12 @@ COPY . .
 RUN npx prisma generate
 RUN npm run build
 
-FROM node:20-alpine
+FROM node:20-slim
 
 WORKDIR /app
+
+# Instala openssl também na imagem final de execução
+RUN apt-get update -y && apt-get install -y openssl
 
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
