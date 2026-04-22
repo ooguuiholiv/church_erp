@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { api } from "@/lib/api";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useAuth } from "@/lib/auth-context";
 
 export default function DashboardHome() {
   const [statsData, setStatsData] = useState({
@@ -30,32 +31,14 @@ export default function DashboardHome() {
     retentionRate: 0
   });
 
+  const { user, loading: authLoading } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const [userRole, setUserRole] = useState("USER");
-  const [userName, setUserName] = useState("Usuário");
 
   useEffect(() => {
-    const fetchUserAndData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          window.location.href = "/login";
-          return;
-        }
-        
-        const profile = await api.get("/auth/profile");
-        const role = profile.role || "USER";
-        setUserRole(role);
-        setUserName(profile.name?.split(" ")[0] || "Usuário");
-        
-        await fetchDashboardData(role);
-      } catch (error) {
-        console.error("Erro de autenticação na home do dashboard");
-      }
-    };
-    
-    fetchUserAndData();
-  }, []);
+    if (!authLoading && user) {
+      fetchDashboardData(user.role);
+    }
+  }, [authLoading, user]);
 
   const fetchDashboardData = async (role: string) => {
     try {
@@ -149,16 +132,16 @@ export default function DashboardHome() {
     },
   ];
 
-  const visibleStats = dashboardStats.filter(s => s.roles.includes(userRole));
+  const visibleStats = dashboardStats.filter(s => s.roles.includes(user?.role || "USER"));
 
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return <div className="p-8 text-zinc-400 animate-pulse">Carregando métricas...</div>;
   }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-display font-bold tracking-tight text-gradient">Bem-vindo, {userName}</h1>
+        <h1 className="text-3xl font-display font-bold tracking-tight text-gradient">Bem-vindo, {user?.name?.split(" ")[0] || "Usuário"}</h1>
         <p className="text-zinc-500">Aqui está um resumo do que está acontecendo na sua igreja hoje.</p>
       </div>
 

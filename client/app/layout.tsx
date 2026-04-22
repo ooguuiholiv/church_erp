@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   description: "Plataforma integrada para gestão de membros e finanças.",
 };
 
+import { AuthProvider } from "@/lib/auth-context";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -30,7 +32,9 @@ export default function RootLayout({
       style={{ colorScheme: "dark" }}
     >
       <body className="min-h-full font-sans bg-zinc-950 text-zinc-50">
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
         <Toaster position="top-right" richColors />
       </body>
     </html>

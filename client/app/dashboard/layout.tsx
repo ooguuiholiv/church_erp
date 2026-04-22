@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { api } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 
 const allMenuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard", roles: ["ADMIN", "USER"] },
@@ -28,28 +28,10 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          window.location.href = "/login";
-          return;
-        }
-        const profile = await api.get("/auth/profile");
-        setUser(profile);
-      } catch (error) {
-        console.error("Erro de autenticação");
-      }
-    };
-    fetchUser();
-  }, []);
+  const { user, logout, loading } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
+    logout();
   };
 
   const userRole = user?.role || "USER";
@@ -58,6 +40,8 @@ export default function DashboardLayout({
     : "U";
 
   const permittedMenu = allMenuItems.filter(item => item.roles.includes(userRole));
+
+  if (loading) return null;
 
   return (
     <div className="flex min-h-screen bg-zinc-950 text-zinc-100">
