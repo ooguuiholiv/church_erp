@@ -139,22 +139,26 @@ export default function DashboardHome() {
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-display font-bold tracking-tight text-gradient">Bem-vindo, {user?.name?.split(" ")[0] || "Usuário"}</h1>
-        <p className="text-zinc-500">Aqui está um resumo do que está acontecendo na sua igreja hoje.</p>
+        <h1 className="text-2xl lg:text-3xl font-display font-bold tracking-tight text-gradient">
+          Bem-vindo, {user?.name?.split(" ")[0] || "Usuário"}
+        </h1>
+        <p className="text-sm lg:text-base text-zinc-500">
+          Aqui está um resumo do que está acontecendo na sua igreja hoje.
+        </p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 lg:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {visibleStats.map((stat) => (
           <Card key={stat.title} className="glass border-zinc-800/50 hover:border-zinc-700/50 transition-all duration-300">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium text-zinc-400">{stat.title}</CardTitle>
-              <stat.icon className={cn("w-5 h-5", stat.color)} />
+              <CardTitle className="text-xs lg:text-sm font-medium text-zinc-400">{stat.title}</CardTitle>
+              <stat.icon className={cn("w-4 h-4 lg:w-5 lg:h-5", stat.color)} />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
+              <div className="text-xl lg:text-2xl font-bold">{stat.value}</div>
             </CardContent>
           </Card>
         ))}

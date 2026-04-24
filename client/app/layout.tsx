@@ -14,7 +14,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Church ERP - Gestão Eclesiástica Premium",
+  title: "Church ERP - Gestão Eclesiástica",
   description: "Plataforma integrada para gestão de membros e finanças.",
 };
 
