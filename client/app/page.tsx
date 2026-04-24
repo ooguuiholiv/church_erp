@@ -7,12 +7,9 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      router.replace("/dashboard");
-    } else {
-      router.replace("/login");
-    }
+    // Redirect to dashboard, the dashboard layout or specific pages 
+    // will handle unauthorized access via 401 response in apiFetch
+    router.replace("/dashboard");
   }, [router]);
 
   return (

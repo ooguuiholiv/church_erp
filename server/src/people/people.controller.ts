@@ -1,7 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { PeopleService } from './people.service';
-import { PersonStatus, Prisma } from '@prisma/client';
+import { PersonStatus } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CreatePersonDto } from './dto/create-person.dto';
+import { UpdatePersonDto } from './dto/update-person.dto';
 
 @Controller('people')
 @UseGuards(JwtAuthGuard)
@@ -9,7 +11,7 @@ export class PeopleController {
   constructor(private readonly peopleService: PeopleService) {}
 
   @Post()
-  create(@Body() data: Prisma.PersonCreateInput) {
+  create(@Body() data: CreatePersonDto) {
     return this.peopleService.create(data);
   }
 
@@ -24,7 +26,7 @@ export class PeopleController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() data: Prisma.PersonUpdateInput) {
+  update(@Param('id') id: string, @Body() data: UpdatePersonDto) {
     return this.peopleService.update(id, data);
   }
 

@@ -1,14 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Transaction, Prisma, TransactionType } from '@prisma/client';
+import { Transaction, TransactionType, Prisma } from '@prisma/client';
+import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { UpdateTransactionDto } from './dto/update-transaction.dto';
 
 @Injectable()
 export class FinanceService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.TransactionCreateInput): Promise<Transaction> {
+  async create(data: CreateTransactionDto): Promise<Transaction> {
+    const { categoryId, date, ...rest } = data;
     return this.prisma.transaction.create({
-      data,
+      data: {
+        ...rest,
+        category: { connect: { id: categoryId } },
+        date: new Date(date),
+      },
     });
   }
 
@@ -62,10 +69,15 @@ export class FinanceService {
     };
   }
 
-  async update(id: string, data: Prisma.TransactionUpdateInput): Promise<Transaction> {
+  async update(id: string, data: UpdateTransactionDto): Promise<Transaction> {
+    const { categoryId, date, ...rest } = data;
     return this.prisma.transaction.update({
       where: { id },
-      data,
+      data: {
+        ...rest,
+        category: categoryId ? { connect: { id: categoryId } } : undefined,
+        date: date ? new Date(date) : undefined,
+      },
     });
   }
 

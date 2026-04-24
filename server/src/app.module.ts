@@ -8,9 +8,18 @@ import { PrismaModule } from './prisma/prisma.module';
 import { PeopleModule } from './people/people.module';
 import { FinanceModule } from './finance/finance.module';
 import { CategoriesModule } from './categories/categories.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [AuthModule, UsersModule, PrismaModule, PeopleModule, FinanceModule, CategoriesModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    AuthModule, 
+    UsersModule, 
+    PrismaModule, 
+    PeopleModule, 
+    FinanceModule, 
+    CategoriesModule
+  ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })

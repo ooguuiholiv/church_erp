@@ -22,6 +22,7 @@ export default function LoginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include", // Essential for HttpOnly cookies
       });
 
       if (!response.ok) {
@@ -29,9 +30,6 @@ export default function LoginPage() {
         throw new Error(error.message || "Credenciais inválidas");
       }
 
-      const data = await response.json();
-      localStorage.setItem("token", data.access_token);
-      
       toast.success("Login realizado com sucesso!");
       
       setTimeout(() => {

@@ -1,14 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Person, PersonStatus, Prisma } from '@prisma/client';
+import { Person, PersonStatus } from '@prisma/client';
+import { CreatePersonDto } from './dto/create-person.dto';
+import { UpdatePersonDto } from './dto/update-person.dto';
 
 @Injectable()
 export class PeopleService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.PersonCreateInput): Promise<Person> {
+  async create(data: CreatePersonDto): Promise<Person> {
+    const { birthDate, ...rest } = data;
     const person = await this.prisma.person.create({
-      data,
+      data: {
+        ...rest,
+        birthDate: birthDate ? new Date(birthDate) : undefined,
+      },
     });
 
     // Record initial status in history
@@ -67,10 +73,14 @@ export class PeopleService {
     return updatedPerson;
   }
 
-  async update(id: string, data: Prisma.PersonUpdateInput) {
+  async update(id: string, data: UpdatePersonDto) {
+    const { birthDate, ...rest } = data;
     return this.prisma.person.update({
       where: { id },
-      data,
+      data: {
+        ...rest,
+        birthDate: birthDate ? new Date(birthDate) : undefined,
+      },
     });
   }
 

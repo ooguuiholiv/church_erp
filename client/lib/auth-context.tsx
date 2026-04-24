@@ -25,15 +25,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUser = async () => {
     try {
-      const token = localStorage.getItem("token");
-      if (token) {
-        const profile = await api.get("/auth/profile");
-        setUser(profile);
-      } else {
-        setUser(null);
-      }
+      // With HttpOnly cookies, we just try to fetch the profile.
+      // If the cookie is missing or invalid, the API will return 401.
+      const profile = await api.get("/auth/profile");
+      setUser(profile);
     } catch (error) {
-      console.error("Auth error:", error);
+      // Profile fetch failed (likely 401), user is not logged in
       setUser(null);
     } finally {
       setLoading(false);
@@ -44,10 +41,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     fetchUser();
   }, []);
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-    window.location.href = "/login";
+  const logout = async () => {
+    try {
+      await api.post("/auth/logout", {});
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setUser(null);
+      window.location.href = "/login";
+    }
   };
 
   return (
