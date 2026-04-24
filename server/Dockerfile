@@ -6,8 +6,9 @@ RUN apt-get update -y && apt-get install -y openssl
 
 WORKDIR /app
 
-# Injeta uma URL via build-arg ou env se necessário, mas não deixa fixo
-ARG DATABASE_URL
+# Injeta uma URL via build-arg ou env se necessário. 
+# Usamos um valor dummy por padrão para o 'prisma generate' não falhar no build.
+ARG DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
 ENV DATABASE_URL=$DATABASE_URL
 
 COPY package*.json ./
